@@ -122,6 +122,26 @@ module housing() {
         translate([0, -(marble_dia + 3)/2, base_height + 2])
             cube([hex_radius + 5, marble_dia + 3, marble_dia + 5]);
 
+        // Gravitrax entrance notches for track clips
+        // Outer width matches the track width (marble_dia + 3), inner tongue is 6.5mm wide
+        // Pocket behind the front fence (floor at Z=1.5)
+        translate([20, 6.5/2, 1.5])
+            cube([28.5 - 20, (marble_dia + 3 - 6.5)/2, base_height + 5]);
+        translate([20, -(marble_dia + 3)/2, 1.5])
+            cube([28.5 - 20, (marble_dia + 3 - 6.5)/2, base_height + 5]);
+
+        // Semi-circle cutouts at the back of the pocket
+        translate([20, 6.5/2 + (marble_dia + 3 - 6.5)/4, 1.5])
+            cylinder(d=(marble_dia + 3 - 6.5)/2, h=base_height + 5);
+        translate([20, -(marble_dia + 3)/2 + (marble_dia + 3 - 6.5)/4, 1.5])
+            cylinder(d=(marble_dia + 3 - 6.5)/2, h=base_height + 5);
+
+        // Cut above the front fence (fence top at Z=2.7, thickness 1.5mm from X=28.5 to X=30)
+        translate([28.5, 6.5/2, 2.7])
+            cube([10, (marble_dia + 3 - 6.5)/2, base_height + 5]);
+        translate([28.5, -(marble_dia + 3)/2, 2.7])
+            cube([10, (marble_dia + 3 - 6.5)/2, base_height + 5]);
+
         // Lever Slot (Bottom cutout)
         translate([pivot_x, 0, 5])
             cube([lever_length + 6, lever_width + 2, lever_thickness + 6], center=true);
