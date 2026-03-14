@@ -57,7 +57,7 @@ module housing() {
             cylinder(d=shaft_outer_dia, h=shaft_height);
             
             // Shaft Fillet/Support for strength
-            translate([0, 0, base_height]) cylinder(r1=hex_radius-2, r2=shaft_outer_dia/2, h=15);
+            translate([0, 0, base_height]) cylinder(r1=(hex_radius-2)/2, r2=shaft_outer_dia/2, h=7.5);
             
             // Button Guide Housing
             translate([button_x, 0, 0]) cylinder(d=16, h=base_height + 4);
