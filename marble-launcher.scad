@@ -5,7 +5,7 @@ $fn = 60;
 // --- Core Parameters ---
 marble_dia = 11.5;
 clearance = 0.4;         
-hex_radius = 60 / sqrt(3);         
+hex_radius = 60 / sqrt(3); // 60 mm edge-to-edge
 base_height = 10;
 shaft_height = 70;       
 shaft_outer_dia = 20;
