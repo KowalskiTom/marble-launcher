@@ -51,7 +51,7 @@ module housing() {
     difference() {
         union() {
             // Main Hex Base
-            cylinder(r=hex_radius, h=base_height, $fn=6);
+            rotate([0, 0, 30]) cylinder(r=hex_radius, h=base_height, $fn=6);
             
             // Vertical Shaft
             cylinder(d=shaft_outer_dia, h=shaft_height);
@@ -102,11 +102,11 @@ module housing() {
 
         // Marble Input Track (Standard 10mm height matching Gravitrax tiles)
         translate([0, 0, base_height + 2]) rotate([0, 90, 0])
-            cylinder(d=marble_dia + 1, h=hex_radius + 5);
+            cylinder(d=marble_dia + 3, h=hex_radius + 5);
         
         // Cut open the top of the input track
-        translate([0, -(marble_dia + 1)/2, base_height + 2])
-            cube([hex_radius + 5, marble_dia + 1, marble_dia + 5]);
+        translate([0, -(marble_dia + 3)/2, base_height + 2])
+            cube([hex_radius + 5, marble_dia + 3, marble_dia + 5]);
 
         // Lever Slot (Bottom cutout)
         translate([pivot_x, 0, 5])
