@@ -11,6 +11,11 @@ shaft_height = 70;
 shaft_outer_dia = 20;
 shaft_inner_dia = marble_dia + 2;
 
+// --- Split Parameters ---
+split_z = 40;
+sleeve_height = 12;
+sleeve_outer_dia = shaft_outer_dia + 6;
+
 // --- Bend Parameters ---
 bend_radius = 20;        
 exit_length = 25;        
@@ -19,32 +24,40 @@ exit_length = 25;
 lever_length = 26;
 lever_width = 8;
 lever_thickness = 5;
-pivot_x = -11;           
-button_x = -22;          
+pivot_x = -14;           
+button_x = -21;          
 
 // --- Rendering Control ---
-// Set to "assembly", "layout", "housing", "lever", "piston", or "button"
+// Set to "assembly", "layout", "housing_bottom", "housing_top", "lever", "piston", "button", or "pin"
 render_mode = "assembly"; 
 
 if (render_mode == "assembly") {
-    housing();
+    housing_bottom();
+    housing_top();
     color("Orange") translate([pivot_x, 0, 5]) lever();
     color("SteelBlue") translate([0, 0, 6]) piston();
     color("FireBrick") translate([button_x, 0, 10]) button();
+    color("Silver") translate([pivot_x, 0, 5]) rotate([90, 0, 0]) pin();
 } else if (render_mode == "layout") {
     // Print Layout (all parts flat)
-    housing();
-    translate([0, 35, lever_thickness/2]) lever();
-    translate([30, 35, 0]) piston();
-    translate([50, 35, 0]) button();
-} else if (render_mode == "housing") {
-    housing();
+    housing_bottom();
+    translate([0, 50, 0]) translate([0, 0, -split_z]) housing_top();
+    translate([35, 35, lever_thickness/2]) lever();
+    translate([65, 35, 0]) piston();
+    translate([85, 35, 0]) button();
+    translate([100, 45, 1.5]) rotate([0, 90, 0]) pin();
+} else if (render_mode == "housing_bottom") {
+    housing_bottom();
+} else if (render_mode == "housing_top") {
+    translate([0, 0, -split_z]) housing_top();
 } else if (render_mode == "lever") {
     lever();
 } else if (render_mode == "piston") {
     piston();
 } else if (render_mode == "button") {
     button();
+} else if (render_mode == "pin") {
+    pin();
 }
 
 module housing() {
@@ -60,7 +73,8 @@ module housing() {
             translate([0, 0, base_height]) cylinder(r1=(hex_radius-2)/2, r2=shaft_outer_dia/2, h=7.5);
             
             // Button Guide Housing
-            translate([button_x, 0, 0]) cylinder(d=16, h=base_height + 4);
+            // Widened to fit the internal flange, heightened for strength
+            translate([button_x, 0, 0]) cylinder(d=18, h=base_height + 6);
             
             // Top Curve Outer (Smooth 90 degree bend)
             translate([bend_radius, 0, shaft_height]) {
@@ -116,8 +130,12 @@ module housing() {
         translate([pivot_x, 0, 5]) rotate([90, 0, 0])
             cylinder(d=3.2, h=hex_radius*2, center=true);
 
-        // Button Guide Hole
+        // Button Flange Clearance (Wider part at bottom to allow button to travel)
         translate([button_x, 0, -1])
+            cylinder(d=14 + clearance, h=14);
+
+        // Button Guide Hole (Narrow part at top to stop flange)
+        translate([button_x, 0, 12])
             cylinder(d=12 + clearance, h=base_height + 10);
     }
 }
@@ -131,14 +149,53 @@ module lever() {
 
 module piston() {
     difference() {
-        cylinder(d=shaft_inner_dia - clearance*2, h=12);
-        translate([0, 0, 12]) sphere(d=marble_dia);
+        cylinder(d=shaft_inner_dia - clearance*2, h=marble_dia/2);
+        translate([0, 0, marble_dia/2]) sphere(d=marble_dia);
     }
 }
 
 module button() {
     union() {
-        translate([0, 0, 14]) cylinder(d=18, h=4);
-        cylinder(d=12 - clearance*2, h=14);
+        cylinder(d=12 - clearance*2, h=20); // Longer shaft to extend above the taller housing
+        cylinder(d=14 - clearance*2, h=3);  // Flange at bottom
+    }
+}
+
+module pin() {
+    cylinder(d=3.2 - clearance/2, h=54, center=true);
+}
+
+module housing_bottom() {
+    difference() {
+        union() {
+            difference() {
+                housing();
+                translate([-100, -100, split_z]) cube([200, 200, 200]);
+            }
+            // Support chamfer
+            translate([0, 0, split_z - sleeve_height - 5]) 
+                cylinder(d1=shaft_outer_dia, d2=sleeve_outer_dia, h=5.01);
+            // Thickened base and sleeve
+            translate([0, 0, split_z - sleeve_height]) 
+                cylinder(d=sleeve_outer_dia, h=sleeve_height * 2);
+        }
+        // Original internal bore up to split
+        translate([0, 0, -1]) 
+            cylinder(d=shaft_inner_dia, h=split_z + 2);
+        
+        // Sleeve cavity for the top half
+        translate([0, 0, split_z]) 
+            cylinder(d=shaft_outer_dia + clearance*2, h=sleeve_height + 2);
+            
+        // Inner chamfer for easy insertion
+        translate([0, 0, split_z + sleeve_height - 1.5])
+            cylinder(d1=shaft_outer_dia + clearance*2, d2=shaft_outer_dia + clearance*2 + 3, h=1.51);
+    }
+}
+
+module housing_top() {
+    difference() {
+        housing();
+        translate([-100, -100, -100]) cube([200, 200, 100 + split_z]);
     }
 }
