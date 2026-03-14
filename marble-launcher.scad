@@ -90,6 +90,10 @@ module housing() {
             // Horizontal Exit Outer Barrel
             translate([bend_radius, 0, shaft_height + bend_radius])
                 rotate([0, 90, 0]) cylinder(d=shaft_outer_dia, h=exit_length);
+            
+            // Top Exit Platform (provides bottom for track notches)
+            translate([bend_radius + exit_length - 15, -shaft_outer_dia/2, shaft_height + bend_radius - 12])
+                cube([15, shaft_outer_dia, 7]);
         }
 
         // Central Shaft Internal Bore
@@ -113,6 +117,25 @@ module housing() {
         // Open the top of the horizontal exit barrel so it can transition to a track
         translate([bend_radius, -shaft_inner_dia/2, shaft_height + bend_radius])
             cube([exit_length + 2, shaft_inner_dia, shaft_inner_dia]);
+
+        // --- Top Exit Notches ---
+        // Pocket behind the front fence (floor at Z=79.5)
+        translate([35, 6.5/2, 79.5])
+            cube([43.5 - 35, (marble_dia + 3 - 6.5)/2, 20]);
+        translate([35, -(marble_dia + 3)/2, 79.5])
+            cube([43.5 - 35, (marble_dia + 3 - 6.5)/2, 20]);
+
+        // Semi-circle cutouts at the back of the pocket
+        translate([35, 6.5/2 + (marble_dia + 3 - 6.5)/4, 79.5])
+            cylinder(d=(marble_dia + 3 - 6.5)/2, h=20);
+        translate([35, -(marble_dia + 3)/2 + (marble_dia + 3 - 6.5)/4, 79.5])
+            cylinder(d=(marble_dia + 3 - 6.5)/2, h=20);
+
+        // Cut above the front fence (fence top at Z=80.7, thickness 1.5mm from X=43.5 to X=45)
+        translate([43.5, 6.5/2, 80.7])
+            cube([10, (marble_dia + 3 - 6.5)/2, 20]);
+        translate([43.5, -(marble_dia + 3)/2, 80.7])
+            cube([10, (marble_dia + 3 - 6.5)/2, 20]);
 
         // Marble Input Track (Standard 10mm height matching Gravitrax tiles)
         translate([0, 0, base_height + 2]) rotate([0, 90, 0])
