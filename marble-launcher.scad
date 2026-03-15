@@ -21,13 +21,13 @@ bend_radius = 20;
 exit_length = 25;        
 
 // --- Mechanism Geometry ---
-lever_length = 32;
+lever_length = 30;
 lever_width = 8;
 lever_thickness = 5;
 pivot_x = -14;           
 pivot_z = 5;
 button_x = -25.5;          
-lever_shift_x = 2;
+lever_shift_x = 4;
 
 // --- Rendering Control ---
 // Set to "assembly", "layout", "housing_bottom", "housing_top", "lever", "piston", "button", or "pin"
@@ -37,7 +37,7 @@ if (render_mode == "assembly") {
     housing_bottom();
     housing_top();
     color("Orange") translate([pivot_x, 0, pivot_z]) lever();
-    color("SteelBlue") translate([0, 0, 6]) piston();
+    color("SteelBlue") translate([0, 0, pivot_z + lever_thickness/2]) piston();
     color("FireBrick") translate([button_x, 0, 10]) button();
     color("Silver") translate([pivot_x, 0, pivot_z]) rotate([90, 0, 0]) pin();
 } else if (render_mode == "layout") {
@@ -191,7 +191,13 @@ module housing() {
 
 module lever() {
     difference() {
-        translate([lever_shift_x, 0, 0]) cube([lever_length, lever_width, lever_thickness], center=true);
+        rotate([90, 0, 0])
+            linear_extrude(height=lever_width, center=true)
+            polygon([
+                [lever_shift_x - lever_length/2, lever_thickness/2],
+                [0, -lever_thickness/2],
+                [lever_shift_x + lever_length/2, lever_thickness/2]
+            ]);
         rotate([90, 0, 0]) cylinder(d=3.2 + clearance, h=lever_width + 2, center=true);
     }
 }
