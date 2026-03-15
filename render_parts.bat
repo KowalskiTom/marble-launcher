@@ -13,8 +13,8 @@ if not exist "%RENDER_DIR%" (
 )
 
 rem Define parts to render: mode -> output filename
-rem We'll render housing, lever, piston, button, assembly, layout
-set PARTS=housing lever piston button assembly layout
+rem We'll render housing_bottom, housing_top, lever, piston, button, pin, assembly, layout
+set PARTS=housing_bottom housing_top lever piston button pin assembly layout
 
 for %%M in (%PARTS%) do (
     echo Rendering %%M...

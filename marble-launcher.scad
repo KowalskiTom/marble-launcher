@@ -8,7 +8,7 @@ clearance = 0.4;
 hex_radius = 60 / sqrt(3); // 60 mm edge-to-edge
 base_height = 10;
 shaft_height = 70;       
-shaft_outer_dia = 20;
+shaft_outer_dia = 16.75;
 shaft_inner_dia = marble_dia + 2;
 
 // --- Split Parameters ---
@@ -93,7 +93,7 @@ module housing() {
             
             // Top Exit Platform (provides bottom for track notches)
             translate([bend_radius + exit_length - 15, -shaft_outer_dia/2, shaft_height + bend_radius - 12])
-                cube([15, shaft_outer_dia, 7]);
+                cube([15, shaft_outer_dia, 12]);
         }
 
         // Central Shaft Internal Bore
@@ -228,11 +228,11 @@ module housing_bottom() {
         
         // Sleeve cavity for the top half
         translate([0, 0, split_z]) 
-            cylinder(d=shaft_outer_dia + clearance*2, h=sleeve_height + 2);
+            cylinder(d=shaft_outer_dia, h=sleeve_height + 2);
             
         // Inner chamfer for easy insertion
         translate([0, 0, split_z + sleeve_height - 1.5])
-            cylinder(d1=shaft_outer_dia + clearance*2, d2=shaft_outer_dia + clearance*2 + 3, h=1.51);
+            cylinder(d1=shaft_outer_dia, d2=shaft_outer_dia + 3, h=1.51);
     }
 }
 
