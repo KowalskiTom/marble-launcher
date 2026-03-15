@@ -31,7 +31,7 @@ lever_shift_x = 4;
 
 // --- Rendering Control ---
 // Set to "assembly", "layout", "housing_bottom", "housing_top", "lever", "piston", "button", or "pin"
-render_mode = "assembly"; 
+render_mode = "piston"; 
 
 if (render_mode == "assembly") {
     housing_bottom();
@@ -205,7 +205,7 @@ module lever() {
 module piston() {
     difference() {
         cylinder(d=shaft_inner_dia - clearance*2, h=marble_dia/2);
-        translate([0, 0, marble_dia/2]) sphere(d=marble_dia);
+        translate([0, 0, marble_dia * 0.75]) sphere(d=marble_dia * 1.5);
     }
 }
 
