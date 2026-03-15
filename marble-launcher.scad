@@ -4,7 +4,7 @@ $fn = 60;
 
 // --- Core Parameters ---
 marble_dia = 11.5;
-clearance = 0.4;         
+clearance = 0.2;         
 hex_radius = 60 / sqrt(3); // 60 mm edge-to-edge
 base_height = 10;
 shaft_height = 70;       
@@ -21,11 +21,13 @@ bend_radius = 20;
 exit_length = 25;        
 
 // --- Mechanism Geometry ---
-lever_length = 26;
+lever_length = 32;
 lever_width = 8;
 lever_thickness = 5;
 pivot_x = -14;           
-button_x = -21;          
+pivot_z = 5;
+button_x = -25.5;          
+lever_shift_x = 2;
 
 // --- Rendering Control ---
 // Set to "assembly", "layout", "housing_bottom", "housing_top", "lever", "piston", "button", or "pin"
@@ -34,10 +36,10 @@ render_mode = "assembly";
 if (render_mode == "assembly") {
     housing_bottom();
     housing_top();
-    color("Orange") translate([pivot_x, 0, 5]) lever();
+    color("Orange") translate([pivot_x, 0, pivot_z]) lever();
     color("SteelBlue") translate([0, 0, 6]) piston();
     color("FireBrick") translate([button_x, 0, 10]) button();
-    color("Silver") translate([pivot_x, 0, 5]) rotate([90, 0, 0]) pin();
+    color("Silver") translate([pivot_x, 0, pivot_z]) rotate([90, 0, 0]) pin();
 } else if (render_mode == "layout") {
     // Print Layout (all parts flat)
     housing_bottom();
@@ -74,7 +76,7 @@ module housing() {
             
             // Button Guide Housing
             // Widened to fit the internal flange, heightened for strength
-            translate([button_x, 0, 0]) cylinder(d=18, h=base_height + 6);
+            translate([button_x, 0, 0]) cylinder(d=9, h=13);
             
             // Top Curve Outer (Smooth 90 degree bend)
             translate([bend_radius, 0, shaft_height]) {
@@ -166,26 +168,30 @@ module housing() {
             cube([10, (marble_dia + 3 - 6.5)/2, base_height + 5]);
 
         // Lever Slot (Bottom cutout)
-        translate([pivot_x, 0, 5])
-            cube([lever_length + 6, lever_width + 2, lever_thickness + 6], center=true);
+        // Front portion needs upper clearance for upward swing
+        translate([pivot_x + lever_shift_x + 5, 0, pivot_z])
+            cube([lever_length - 4, lever_width + 2, lever_thickness + 6], center=true);
+        // Back portion under button uses a lower roof to keep the housing connected
+        translate([pivot_x + lever_shift_x - 12, 0, pivot_z - 2])
+            cube([14, lever_width + 2, lever_thickness + 5], center=true);
 
         // Pivot Pin Hole
-        translate([pivot_x, 0, 5]) rotate([90, 0, 0])
+        translate([pivot_x, 0, pivot_z]) rotate([90, 0, 0])
             cylinder(d=3.2, h=hex_radius*2, center=true);
 
         // Button Flange Clearance (Wider part at bottom to allow button to travel)
         translate([button_x, 0, -1])
-            cylinder(d=14 + clearance, h=14);
+            cylinder(d=7 + clearance, h=11);
 
         // Button Guide Hole (Narrow part at top to stop flange)
-        translate([button_x, 0, 12])
-            cylinder(d=12 + clearance, h=base_height + 10);
+        translate([button_x, 0, 9])
+            cylinder(d=6 + clearance, h=base_height + 10);
     }
 }
 
 module lever() {
     difference() {
-        cube([lever_length, lever_width, lever_thickness], center=true);
+        translate([lever_shift_x, 0, 0]) cube([lever_length, lever_width, lever_thickness], center=true);
         rotate([90, 0, 0]) cylinder(d=3.2 + clearance, h=lever_width + 2, center=true);
     }
 }
@@ -199,8 +205,8 @@ module piston() {
 
 module button() {
     union() {
-        cylinder(d=12 - clearance*2, h=20); // Longer shaft to extend above the taller housing
-        cylinder(d=14 - clearance*2, h=3);  // Flange at bottom
+        cylinder(d=6 - clearance*2, h=10); // Longer shaft to extend above the taller housing
+        cylinder(d=7 - clearance*2, h=3);  // Flange at bottom
     }
 }
 
