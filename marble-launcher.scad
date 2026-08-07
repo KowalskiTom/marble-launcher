@@ -15,6 +15,7 @@ shaft_inner_dia = marble_dia + 2;
 split_z = 40;
 sleeve_height = 12;
 sleeve_outer_dia = shaft_outer_dia + 6;
+lower_shaft_outer_dia = shaft_outer_dia + (shaft_outer_dia - shaft_inner_dia);
 
 // --- Bend Parameters ---
 bend_radius = 20;        
@@ -30,8 +31,8 @@ button_x = -25.5;
 lever_shift_x = 4;
 
 // --- Rendering Control ---
-// Set to "assembly", "layout", "housing_bottom", "housing_top", "lever", "piston", "button", or "pin"
-render_mode = "piston"; 
+// Set to "assembly", "layout", "housing_bottom", "housing_top", "lever", "piston", "assembly", or "pin"
+render_mode = "assembly"; 
 
 if (render_mode == "assembly") {
     housing_bottom();
@@ -72,7 +73,10 @@ module housing() {
             cylinder(d=shaft_outer_dia, h=shaft_height);
             
             // Shaft Fillet/Support for strength
-            translate([0, 0, base_height]) cylinder(r1=(hex_radius-2)/2, r2=shaft_outer_dia/2, h=7.5);
+            translate([0, 0, base_height]) cylinder(r1=(hex_radius-2)/2, r2=lower_shaft_outer_dia/2, h=7.5);
+            
+            // Thickened Lower Shaft
+            translate([0, 0, base_height + 7.5]) cylinder(d=lower_shaft_outer_dia, h=(split_z - sleeve_height - 5) - (base_height + 7.5));
             
             // Button Guide Housing
             // Widened to fit the internal flange, heightened for strength
@@ -195,8 +199,9 @@ module lever() {
             linear_extrude(height=lever_width, center=true)
             polygon([
                 [lever_shift_x - lever_length/2, lever_thickness/2],
-                [0, -lever_thickness/2],
-                [lever_shift_x + lever_length/2, lever_thickness/2]
+                [0, lever_thickness/2],
+                [lever_shift_x + lever_length/2, -lever_thickness/2],
+                [0, -lever_thickness/2]
             ]);
         rotate([90, 0, 0]) cylinder(d=3.2 + clearance, h=lever_width + 2, center=true);
     }
@@ -229,7 +234,7 @@ module housing_bottom() {
             }
             // Support chamfer
             translate([0, 0, split_z - sleeve_height - 5]) 
-                cylinder(d1=shaft_outer_dia, d2=sleeve_outer_dia, h=5.01);
+                cylinder(d1=lower_shaft_outer_dia, d2=sleeve_outer_dia, h=5.01);
             // Thickened base and sleeve
             translate([0, 0, split_z - sleeve_height]) 
                 cylinder(d=sleeve_outer_dia, h=sleeve_height * 2);
